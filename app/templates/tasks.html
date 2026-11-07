@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}
+Tasks - TaskFlow
+{% endblock %}
+
+{% block content %}
+
+<section class="tasks-page">
+
+    <div class="container">
+
+        <div class="page-header">
+            <div>
+                <p class="welcome-text">Stay organized</p>
+                <h1>My Tasks</h1>
+            </div>
+
+            <a href="{{ url_for('main.add_task') }}" class="btn">
+                + Add Task
+            </a>
+        </div>
+
+
+        <!-- Search and Filter -->
+
+<div class="task-controls">
+
+    <form method="GET" action="{{ url_for('main.tasks') }}"
+          class="search-form">
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search tasks..."
+            value="{{ search }}"
+        >
+
+        <button type="submit" class="btn">
+            Search
+        </button>
+
+    </form>
+
+
+    <div class="filter-links">
+
+        <a href="{{ url_for('main.tasks', status='all', search=search) }}"
+           class="{% if status == 'all' %}active-filter{% endif %}">
+            All
+        </a>
+
+        <a href="{{ url_for('main.tasks', status='pending', search=search) }}"
+           class="{% if status == 'pending' %}active-filter{% endif %}">
+            Pending
+        </a>
+
+        <a href="{{ url_for('main.tasks', status='completed', search=search) }}"
+           class="{% if status == 'completed' %}active-filter{% endif %}">
+            Completed
+        </a>
+
+    </div>
+
+</div>
+
+
+        {% if tasks %}
+
+            <div class="task-list">
+
+                {% for task in tasks %}
+
+                    <div class="task-card">
+
+                        <!-- Task Information -->
+
+                        <div class="task-info">
+
+                            <h3 class="{% if task.completed %}completed-title{% endif %}">
+                                {{ task.title }}
+                            </h3>
+
+                            {% if task.description %}
+                                <p>{{ task.description }}</p>
+                            {% endif %}
+
+                            <div class="task-time">
+
+                                {% if task.start_at %}
+                                    <p>
+                                        <strong>Start:</strong>
+                                        {{ task.start_at.strftime('%d %b %Y, %I:%M %p') }}
+                                    </p>
+                                {% endif %}
+
+                                {% if task.due_at %}
+                                    <p>
+                                        <strong>Deadline:</strong>
+                                        {{ task.due_at.strftime('%d %b %Y, %I:%M %p') }}
+                                    </p>
+                                {% endif %}
+
+                                {% if task.completed_at %}
+                                    <p>
+                                        <strong>Completed:</strong>
+                                        {{ task.completed_at.strftime('%d %b %Y, %I:%M %p') }}
+                                    </p>
+                                {% endif %}
+
+                            </div>
+
+                            <small>
+                                Created: {{ task.created_at.strftime('%d %b %Y') }}
+                            </small>
+
+                        </div>
+
+
+                        <!-- Task Actions -->
+
+                        <div class="task-actions">
+
+                            {% if task.completed %}
+
+                                <span class="status completed">Completed</span>
+
+                                <form
+                                    action="{{ url_for('main.toggle_task', task_id=task.id) }}"
+                                    method="POST"
+                                >
+                                    <button type="submit" class="complete-btn">
+                                        Undo
+                                    </button>
+                                </form>
+
+                            {% else %}
+
+                                <span class="status {{ task.status|lower }}">
+                                    {{ task.status }}
+                                </span>
+
+                                <form
+                                    action="{{ url_for('main.toggle_task', task_id=task.id) }}"
+                                    method="POST"
+                                >
+                                    <button type="submit" class="complete-btn">
+                                        Mark Complete
+                                    </button>
+                                </form>
+
+                            {% endif %}
+
+                            <a
+                                href="{{ url_for('main.edit_task', task_id=task.id) }}"
+                                class="edit-btn"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                action="{{ url_for('main.delete_task', task_id=task.id) }}"
+                                method="POST"
+                                class="delete-form"
+                            >
+                                <button
+                                    type="button"
+                                    class="delete-btn"
+                                    data-task-title="{{ task.title }}"
+                                >
+                                    Delete
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <h3>No tasks yet</h3>
+
+                <p>
+                    You haven't added any tasks.
+                </p>
+
+                <a href="{{ url_for('main.add_task') }}" class="btn">
+                    Add Your First Task
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+<!-- Delete Confirmation Modal -->
+
+<div class="modal-overlay" id="deleteModal">
+
+    <div class="modal-box">
+
+        <div class="modal-icon">
+            <span>!</span>
+        </div>
+
+        <h2>Delete Task?</h2>
+
+        <p>
+            Are you sure you want to delete
+            <strong id="deleteTaskName">this task</strong>?
+        </p>
+
+        <small>This action cannot be undone.</small>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="cancel-modal-btn"
+                id="cancelDelete"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="confirm-delete-btn"
+                id="confirmDelete"
+            >
+                Delete Task
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

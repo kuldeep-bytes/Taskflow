@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard - TaskFlow
+{% endblock %}
+
+{% block content %}
+
+<section class="dashboard">
+
+    <div class="container">
+
+        <div class="dashboard-header">
+            <div>
+                <p class="welcome-text">Welcome back 👋</p>
+                <h1>Your Dashboard</h1>
+            </div>
+
+            <a href="{{ url_for('main.add_task') }}" class="btn">
+                + Add Task
+            </a>
+        </div>
+
+
+        <!-- Task Statistics -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+                <span>Total Tasks</span>
+                <h2>{{ total_tasks }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>Completed</span>
+                <h2>{{ completed_tasks }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>Pending</span>
+                <h2>{{ pending_tasks }}</h2>
+            </div>
+
+        </div>
+
+
+        <!-- Recent Tasks -->
+
+        <div class="tasks-section">
+
+            <div class="section-header">
+                <h2>Recent Tasks</h2>
+
+                <a href="{{ url_for('main.tasks') }}">
+                    View All
+                </a>
+            </div>
+
+           {% if recent_tasks %}
+
+                    <div class="task-list">
+
+                        {% for task in recent_tasks %}
+
+                            <div class="task-card">
+
+                                <div class="task-info">
+
+                                    <a href="{{ url_for('main.edit_task', task_id=task.id) }}"
+                                        class="dashboard-task-link">
+
+                                        <h3 class="{% if task.completed %}completed-title{% endif %}">
+                                            {{ task.title }}
+                                        </h3>
+
+                                    </a>
+
+                                    {% if task.description %}
+                                        <p>{{ task.description }}</p>
+                                    {% endif %}
+
+                                </div>
+
+                                <div>
+
+                                    {% if task.completed %}
+                                        <span class="status completed">
+                                            Completed
+                                        </span>
+                                    {% else %}
+                                        <span class="status pending">
+                                            Pending
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <h3>No tasks yet</h3>
+
+                        <p>Start by adding your first task.</p>
+
+                        <a href="{{ url_for('main.add_task') }}" class="btn">
+                            Add Your First Task
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

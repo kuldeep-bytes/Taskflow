@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home - TaskFlow
+{% endblock %}
+
+{% block content %}
+
+<section class="hero home-hero">
+
+    <div class="container">
+
+        <h1>Manage Your Tasks. Stay Organized.</h1>
+
+        <p>
+            TaskFlow helps you keep track of your daily tasks
+            in a simple and organized way.
+        </p>
+
+        <a href="{{ url_for('main.dashboard') }}" class="btn">
+            Get Started
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}
